@@ -6,6 +6,8 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using WebServer.Server.Http;
+using WebServer.Server.Http.Response;
+using WebServer.Server.Routing;
 
 namespace WebServer.Server
 {
@@ -14,12 +16,28 @@ namespace WebServer.Server
         private readonly IPAddress ipAddress;
         private readonly int port;
         private readonly TcpListener listener;
-        public HttpServer(string ipAddress, int port)
+
+        private readonly RoutingTable routingTable;
+
+        public HttpServer(string ipAddress, int port, Action<IRoutingTable> routingTableConfig)
         {
             this.ipAddress = IPAddress.Parse(ipAddress);
             this.port = port;
 
             listener = new TcpListener(this.ipAddress, port);
+
+            this.routingTable = new RoutingTable();
+            routingTableConfig(this.routingTable);   
+        }
+
+        public HttpServer(int port, Action<IRoutingTable> routingTable)
+            :this("127.0.0.1", port, routingTable)
+        {
+        }
+
+        public HttpServer(Action<IRoutingTable> routingTable)
+            :this("127.0.0.1", 5000, routingTable)
+        {
         }
 
         public async Task Start()
@@ -38,11 +56,16 @@ namespace WebServer.Server
 
                 var requestText = await this.ReadRequest(networkStream);
 
+                if (string.IsNullOrEmpty(requestText))
+                    continue;
+
                 Console.WriteLine(requestText);
 
                 var request = HttpRequest.Parse(requestText);
 
-                await this.WriteResponse(networkStream);
+                var response = this.routingTable.MatchRequest(request);
+
+                await this.WriteResponse(networkStream, response);
 
                 connection.Close();
             }
@@ -57,32 +80,29 @@ namespace WebServer.Server
 
             var requestBuilder = new StringBuilder();
 
-            while (networkStream.DataAvailable)
+            do
             {
                 var bytesRead = await networkStream.ReadAsync(buffer, 0, bufferLength);
-
+                  
                 totalBytesRead += bytesRead;
+
+                if (totalBytesRead > 10 * 1024)
+                {
+                    throw new InvalidOperationException("Request is too large.");
+                }
 
                 requestBuilder.Append(Encoding.UTF8.GetString(buffer, 0, bytesRead));
             }
+            while (networkStream.DataAvailable);
 
             return requestBuilder.ToString();
         }
 
-        private async Task WriteResponse(NetworkStream networkStream)
+        private async Task WriteResponse(
+            NetworkStream networkStream, 
+            HttpResponse response)
         {
-            var content = "блаблабла";
-            var contentLength = Encoding.UTF8.GetByteCount(content);
-
-            var response = $@"HTTP/1.1 200 OK
-Server: My Web Server
-Date: {DateTime.UtcNow.ToString("r")}
-Content-Lenght:{contentLength}
-Content-Type: text/html; charset=UTF-8
-
-{content}";
-
-            var responseBytes = Encoding.UTF8.GetBytes(response);
+            var responseBytes = Encoding.UTF8.GetBytes(response.ToString());
 
             await networkStream.WriteAsync(responseBytes);
         }

@@ -19,6 +19,8 @@ namespace WebServer.Server.Http
 
         public static HttpRequest Parse(string request)
         {
+
+
             var lines = request.Split(NewLine);
 
             var startLine = lines.First().Split(" ");
@@ -49,6 +51,7 @@ namespace WebServer.Server.Http
                 "POST" => HttpMethod.Post,
                 "PUT" => HttpMethod.Put,
                 "DELETE" => HttpMethod.Delete,
+                "" => HttpMethod.Get,
                 _ => throw new InvalidOperationException($"Method {method} is not supported.")
             };
 
@@ -65,13 +68,10 @@ namespace WebServer.Server.Http
 
                 var splitHeadrer = headerLine.Split(": ", 2);
 
-                var header = new HttpHeader
-                {
-                    Name = splitHeadrer[0],
-                    Value = splitHeadrer[1]
-                };
+                var headerName = splitHeadrer[0];
+                var headerValue = splitHeadrer[1];
 
-                headerCollection.Add(header);
+                headerCollection.Add(headerName, headerValue);
             }
 
             return headerCollection;
