@@ -3,19 +3,22 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using WebServer.Controllers;
 using WebServer.Server;
+using WebServer.Server.Controllers;
 using WebServer.Server.Responses;
 
 namespace WebServer
 {
-    class Startup
+    public class Startup
     { 
         static async Task Main()
             => await new HttpServer(routes => routes
-            .MapGet("/", new TextResponse("this is text response from home"))
-            .MapGet("/Cats", new HtmlResponse("<h1>this is html response from the cats<h1>")))
+            .MapGet<HomeController>("/", c => c.Index())
+            .MapGet<HomeController>("/Softuni", c => c.SoftUni())
+            .MapGet<AnimalController>("/Cats", c => c.Cats())
+            .MapGet<AnimalController>("/Dogs", c => c.Dogs()))
             .Start();
 
-            
     }
 }

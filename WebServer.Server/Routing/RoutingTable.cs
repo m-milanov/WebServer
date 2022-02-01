@@ -12,7 +12,7 @@ namespace WebServer.Server.Routing
 {
     public class RoutingTable : IRoutingTable
     {
-        private readonly Dictionary<HttpMethod, Dictionary<string, HttpResponse>> routes;
+        private readonly Dictionary<HttpMethod, Dictionary<string, Func<HttpRequest, HttpResponse>>> routes;
 
         public RoutingTable()
         {
@@ -28,21 +28,32 @@ namespace WebServer.Server.Routing
 
         public IRoutingTable Map(string path, HttpMethod method, HttpResponse response)
         {
-            Guard.AgainstNull(path, nameof(path));
             Guard.AgainstNull(response, nameof(response));
 
-            this.routes[method][path] = response;
+            return this.Map(path, method, request => response);
+        }
+
+        public IRoutingTable Map(string path, HttpMethod method, Func<HttpRequest, HttpResponse> responseFunction)
+        {
+            Guard.AgainstNull(path, nameof(path));
+            Guard.AgainstNull(responseFunction, nameof(responseFunction));
+
+            this.routes[method][path.ToLower()] = responseFunction;
 
             return this;
         }
 
         public IRoutingTable MapGet(string path, HttpResponse response)
             => Map(path, HttpMethod.Get, response);
+        public IRoutingTable MapGet(string path, Func<HttpRequest, HttpResponse> responseFunction)
+            => Map(path, HttpMethod.Get, responseFunction);
 
         public IRoutingTable MapPost(string path, HttpResponse response)
             => Map(path, HttpMethod.Post, response);
+        public IRoutingTable MapPost(string path, Func<HttpRequest, HttpResponse> responseFunction)
+            => Map(path, HttpMethod.Post, responseFunction);
 
-        public HttpResponse MatchRequest(HttpRequest request)
+        public HttpResponse ExecuteRequest(HttpRequest request)
         {
             var requestMethod = request.Method;
             var requestPath = request.Path;
@@ -51,8 +62,11 @@ namespace WebServer.Server.Routing
                 !this.routes[requestMethod].ContainsKey(requestPath))
                 return new NotFoundResponse();
 
-            return this.routes[requestMethod][requestPath];
-        
+            var responseFunction = this.routes[requestMethod][requestPath];
+
+            return responseFunction(request);
         }
+
+       
     }
 }

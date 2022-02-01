@@ -10,9 +10,19 @@ namespace WebServer.Server.Routing
 {
     public interface IRoutingTable
     {
-        IRoutingTable MapGet(string path, HttpResponse response);
         IRoutingTable Map(string path, HttpMethod method, HttpResponse response);
 
+        IRoutingTable Map(string path, HttpMethod method, Func<HttpRequest, HttpResponse> responseFunction);
 
+        IRoutingTable MapGet(string path, HttpResponse response);
+
+        IRoutingTable MapGet(string path, Func<HttpRequest, HttpResponse> responseFunction);
+
+        
+        IRoutingTable MapPost(string path, HttpResponse response);
+
+        IRoutingTable MapPost(string path, Func<HttpRequest, HttpResponse> responseFunction);
+
+        
     }
 }
