@@ -16,8 +16,10 @@ namespace WebServer
             => await new HttpServer(routes => routes
             .MapGet<HomeController>("/", c => c.Index())
             .MapGet<HomeController>("/Softuni", c => c.SoftUni())
-            .MapGet<AnimalController>("/Cats", c => c.Cats())
-            .MapGet<AnimalController>("/Dogs", c => c.Dogs()))
+            .MapGet<AnimalsController>("/Cats", c => c.Cats())
+            .MapGet<AnimalsController>("/Dogs", c => c.Dogs())
+            .MapGet<AnimalsController>("/Bunnies", c => c.Bunnies())
+            .MapGet<AnimalsController>("/Turtles", c => c.Turtles()))
             .Start();
 
     }

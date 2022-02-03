@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WebServer.Server.Http;
 using WebServer.Server.Http.Response;
 
 namespace WebServer.Server.Responses
@@ -10,7 +11,7 @@ namespace WebServer.Server.Responses
     public class HtmlResponse : ContentResponse
     {
         public HtmlResponse(string content)
-            :base(content, "text/html; charset=UTF-8")
+            :base(content, HttpContentType.Html)
         {
             
         }

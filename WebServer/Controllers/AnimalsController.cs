@@ -11,9 +11,9 @@ using WebServer.Server.Responses;
 
 namespace WebServer.Controllers
 {
-    public class AnimalController : Controller
+    public class AnimalsController : Controller
     {
-        public AnimalController(HttpRequest request)
+        public AnimalsController(HttpRequest request)
             :base(request)
         {
         }
@@ -32,9 +32,16 @@ namespace WebServer.Controllers
         }
 
         public HttpResponse Dogs()
-        {
-            return Html("<h2> this is html response from dogs</h2>");
-        }
+            => View();
+
+        public HttpResponse Bunnies()
+            => View("Rabbits");
+
+        public HttpResponse Turtles()
+            => View("/Animals/Wild/Turtles");
+
+
+
 
     }
 }
