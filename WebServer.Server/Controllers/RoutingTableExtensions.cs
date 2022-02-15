@@ -29,7 +29,7 @@ namespace WebServer.Server.Controllers
             string path,
             Func<TController, HttpResponse> controllerFunction)
             where TController : Controller
-            => routingTable.MapGet(path, request =>
+            => routingTable.MapPost(path, request =>
             {
                 var controller = CreateController<TController>(request);
 
