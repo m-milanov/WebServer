@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WebServer.Models.Animals;
 using WebServer.Server;
 using WebServer.Server.Controllers;
 using WebServer.Server.Http;
@@ -21,14 +22,25 @@ namespace WebServer.Controllers
 
         public HttpResponse Cats()
         {
+
             var query = this.Request.Query;
             var catName = query.ContainsKey("Name")
                 ? query["Name"]
-                : "the cats";
+                : "Paco";
+            
+            var catAge = query.ContainsKey("Age")
+                ? int.Parse(query["Age"])
+                : 0;
 
-            var result = $"<h1>this is html response from {catName}<h1>";
+            var viewModel = new CatViewModel 
+            { 
+                Name = catName,
+                Age = catAge
+            };
 
-            return Html(result);
+
+
+            return View(viewModel); 
         }
 
         public HttpResponse Dogs()
