@@ -24,7 +24,5 @@ namespace WebServer
                 .MapGet<CatsController>("/Cats/Create", c => c.Create())
                 .MapPost<CatsController>("/Cats/Save", c => c.Save()))
             .Start();
-
-
     }
 }
