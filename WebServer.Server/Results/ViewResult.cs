@@ -7,14 +7,19 @@ using System.Threading.Tasks;
 using WebServer.Server.Http;
 using WebServer.Server.Http.Response;
 
-namespace WebServer.Server.Responses
+namespace WebServer.Server.Results
 {
-    public class ViewResponse : HttpResponse
+    public class ViewResult : ActionResult
     {
         private const char PATHSEPARATOR = '/';
-        public ViewResponse(string viewName, string controllerName, object model) 
-            : base(HttpStatusCode.OK)
+        public ViewResult(
+            HttpResponse response,
+            string viewName, 
+            string controllerName, 
+            object model) 
+            : base(response)
         {
+            this.StatusCode = HttpStatusCode.OK;
             this.GetHtml(viewName, controllerName, model);
         }
 

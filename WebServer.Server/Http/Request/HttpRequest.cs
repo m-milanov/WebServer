@@ -16,6 +16,7 @@ namespace WebServer.Server.Http
         public IReadOnlyDictionary<string, string> Query { get; private set; }
         public IReadOnlyDictionary<string, string> Form { get; private set; }
         public IReadOnlyDictionary<string, HttpHeader> Headers { get; private set; } 
+        public IReadOnlyDictionary<string, HttpCookie> Cookies { get; private set; }
 
         public string Body { get; private set; }
 
@@ -27,13 +28,14 @@ namespace WebServer.Server.Http
 
             var startLine = lines.First().Split(" ");
 
-            var method = ParseHttpMethod(startLine[0]);
+            var method = ParseMethod(startLine[0]);
             var url = startLine[1];
 
             var (path, query) = ParseUrl(url);
 
+            var headers = ParseHeaders(lines.Skip(1));
 
-            var headers = ParseHttpHeaders(lines.Skip(1));
+            var cookies = ParseCookies(headers);
 
             var bodyLines = lines.Skip(headers.Count + 2).ToArray();
 
@@ -47,13 +49,14 @@ namespace WebServer.Server.Http
                 Path = path,
                 Query = query,
                 Headers = headers,
+                Cookies = cookies,
                 Body = body,
                 Form = form,
             };
 
         }
 
-        private static HttpMethod ParseHttpMethod(string method)
+        private static HttpMethod ParseMethod(string method)
             => method.ToUpper() switch
             {
                 "GET" => HttpMethod.Get,
@@ -83,7 +86,7 @@ namespace WebServer.Server.Http
                 .Where(part => part.Length == 2)
                 .ToDictionary(part => part[0], part => part[1]);
 
-        private static Dictionary<string, HttpHeader> ParseHttpHeaders
+        private static Dictionary<string, HttpHeader> ParseHeaders
             (IEnumerable<string> headerLines)
         {
             var headerCollection = new Dictionary<string, HttpHeader>();
@@ -120,5 +123,29 @@ namespace WebServer.Server.Http
             return result;
         }
 
+        private static Dictionary<string, HttpCookie> ParseCookies(
+            Dictionary<string, HttpHeader>headers)
+        {
+            var cookies = new Dictionary<string, HttpCookie>();
+
+            if (headers.ContainsKey(HttpHeader.Cookie))
+            {
+                var cookieHeader = headers[HttpHeader.Cookie];
+
+                cookieHeader.Value
+                    .Split(';')
+                    .Select(c => c.Split('='))
+                    .Select(cp => new 
+                    {
+                        Name = cp[0].Trim(),
+                        Value = cp[1].Trim()
+                    })
+                    .ToList()
+                    .ForEach(c => cookies.Add(c.Name, new HttpCookie(c.Name, c.Value)));
+
+            }
+
+            return cookies;
+        }
     }
 }

@@ -7,12 +7,12 @@ using WebServer.Server.Common;
 using WebServer.Server.Http;
 using WebServer.Server.Http.Response;
 
-namespace WebServer.Server.Responses
+namespace WebServer.Server.Results
 {
-    public class TextResponse : ContentResponse
+    public class TextResult : ContentResult
     {
-        public TextResponse(string text)
-            : base(text, HttpContentType.PlainText)
+        public TextResult(HttpResponse response, string text)
+            : base(response, text, HttpContentType.PlainText)
         { 
 
         }

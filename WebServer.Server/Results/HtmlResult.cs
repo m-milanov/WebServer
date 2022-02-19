@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 using WebServer.Server.Http;
 using WebServer.Server.Http.Response;
 
-namespace WebServer.Server.Responses
+namespace WebServer.Server.Results
 {
-    public class HtmlResponse : ContentResponse
+    public class HtmlResult : ContentResult
     {
-        public HtmlResponse(string content)
-            :base(content, HttpContentType.Html)
+        public HtmlResult(HttpResponse response, string content)
+            :base(response, content, HttpContentType.Html)
         {
             
         }

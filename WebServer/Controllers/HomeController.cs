@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using WebServer.Server;
 using WebServer.Server.Http;
 using WebServer.Server.Http.Response;
-using WebServer.Server.Responses;
 
 namespace WebServer.Controllers
 {

@@ -7,16 +7,9 @@ using WebServer.Server.Common;
 
 namespace WebServer.Server.Http
 {
-    public class HttpHeader
+    public class HttpCookie
     {
-        public const string ContentType = "Content-Type";
-        public const string ContentLenght = "Content-Lenght";
-        public const string Server = "Server";
-        public const string Date = "Date";
-        public const string Location = "Location";
-        public const string SetCookie = "Set-Cookie";
-        public const string Cookie = "Cookie";
-        public HttpHeader(string name, string value)
+        public HttpCookie(string name, string value)
         {
             Guard.AgainstNull(name, nameof(name));
             Guard.AgainstNull(value, nameof(value));
@@ -29,7 +22,6 @@ namespace WebServer.Server.Http
         public string Value { get; set; }
 
         public override string ToString()
-            => $"{this.Name}: {this.Value}";
-        
+            => $"{this.Name}={this.Value}";
     }
 }

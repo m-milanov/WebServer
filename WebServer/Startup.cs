@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using WebServer.Controllers;
 using WebServer.Server;
 using WebServer.Server.Controllers;
-using WebServer.Server.Responses;
+using WebServer.Server.Results;
 
 namespace WebServer
 {
@@ -20,6 +20,7 @@ namespace WebServer
                 .MapGet<AnimalsController>("/Dogs", c => c.Dogs())
                 .MapGet<AnimalsController>("/Bunnies", c => c.Bunnies())
                 .MapGet<AnimalsController>("/Turtles", c => c.Turtles())
+                .MapGet<AccountController>("/Cookies", c => c.ActionWithCookies())
                 .MapGet<CatsController>("/Cats/Create", c => c.Create())
                 .MapPost<CatsController>("/Cats/Save", c => c.Save()))
             .Start();

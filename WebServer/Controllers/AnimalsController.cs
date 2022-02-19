@@ -8,7 +8,7 @@ using WebServer.Server;
 using WebServer.Server.Controllers;
 using WebServer.Server.Http;
 using WebServer.Server.Http.Response;
-using WebServer.Server.Responses;
+using WebServer.Server.Results;
 
 namespace WebServer.Controllers
 {
